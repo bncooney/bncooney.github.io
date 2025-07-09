@@ -478,89 +478,122 @@ footer::before {
 </style>
 	<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neal Cooney's Blog</title>
+<title>Neal Cooney's Tech(ish) Blog</title>
 </head>
 <body>
 	<input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle mobile navigation menu">
 	<label for="mobile-menu-toggle" class="mobile-menu-button" aria-label="Open mobile menu"></label>
 	<header>
-		<h1>Neal Cooney's Blog</h1>
+		<h1>Neal Cooney's Tech(ish) Blog</h1>
 <nav>
 	<a href="index.html">Home</a>
 </nav>
 	</header>
 	<div class="container">
-		<img src="monobloc128.png" alt="Monoblock logo" width="128" height="128">
 		<main>
 			<article>
-	<time datetime="2025-06-29">June 29, 2025</time>
+	<time datetime="2025-07-09">July 09, 2025</time>
 	<section>
-		<p>Placeholder</p>
-		<!--<h3>Building a Minimalist Static Site Generator</h3>
-<p>In this post, I will walk you through the architecture and design decisions behind a simple static site generator built with speed and simplicity as the primary goals. Every choice was made to minimize complexity while maintaining functionality. Both the generator and this blog post were "vibe coded" with AI assistance, embracing rapid prototyping and iterative development.</p>
+		<style>
+	.biblical-year {
+		font-family: 'Brush Script MT', 'Lucida Handwriting', 'Segoe Script', cursive;
+		font-style: italic;
+		font-size: 1.1em;
+		color: #d4af37;
+		text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+		letter-spacing: 0.5px;
+		font-weight: 500;
+		position: relative;
+		background: linear-gradient(
+			90deg,
+			#d4af37 0%,
+			#e6c866 25%,
+			#f0d485 50%,
+			#e6c866 75%,
+			#d4af37 100%
+		);
+		background-size: 200% 100%;
+		background-clip: text;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+		animation: holographic-sweep 6s ease-in-out infinite;
+	}
+	
+	@keyframes holographic-sweep {
+		0% {
+			background-position: -200% 0;
+		}
+		50% {
+			background-position: 0% 0;
+		}
+		100% {
+			background-position: 200% 0;
+		}
+	}
+	/* Stylish code block for inline and block code */
+	.code-block {
+		background: #181c24;
+		color: #e0e6f0;
+		padding: 0.3em 0.6em;
+		border-radius: 4px;
+		font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+		font-size: 0.9em;
+		display: inline;
+		margin: 0;
+		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+		font-weight: normal;
+		white-space: nowrap;
+	}
+</style>
+<h3>public static void Main</h3>
 
-<h4>Architecture Overview</h4>
-<p>Our static site generator follows a straightforward architecture designed for rapid development and easy maintenance. The system prioritizes clarity and directness over abstraction. Let me walk you through the key components:</p>
+<h4>On writing a static site generator in <span class="biblical-year">the year of our Lord twenty twenty five</span>
+</h4>
 
-<h4>Core Components</h4>
+<p>The first webpage I ever made was written in Microsoft Word and was about the Ghostbusters. I didn't get very far, and I don't recall if it ever made it to GeoCities (as God intended). If it did, I don't expect the internet is any worse of for its loss to the passage of time.</p>
 
-<h5>1. Program.cs - The Central Controller</h5>
-<p>This serves as the main entry point and orchestrates the entire build process. By keeping all the core logic in a single file, we maintain simplicity and make the build process easy to understand and debug.</p>
+<p>That isn't to say that the internet is better off without GeoCities. On the contrary, the internet has become much less personal, but much more invasive. Many more people have access, but it has never become any easier than it was in the late nineties to create a webpage.</p>
 
-<h5>2. View Models - Data Management</h5>
-<p>We use a minimal set of ViewModels to handle data transformation and presentation logic:</p>
+<p>I would digress here into a (very casual) examination of the exhaustive monetisation of ...<i>everything</i>, the ephemeral nature of short form video, and the causal loop of social media on the aformentioned, but I would never finish the post.</p>
+
+<h5>Static Site Generation</h5>
+
+<p>My design intent for writing a static site generator:</p>
 <ul>
-<li><strong>PostViewModel.cs</strong> - Manages individual blog post data and metadata</li>
-<li><strong>FooterViewModel.cs</strong> - Handles footer content and navigation</li>
+	<li>I want content to load <i>fast</i>.
+		<ul>
+			<li>Computers are fast now. <i>FAST</i>, fast.</li>
+			<li>All this waiting around is a software problem.</li>
+		</ul>
+	<li>I want to be able to write <i>fast</i>.</li>
+	<ul>
+		<li>I want to write words on a page, with paragraphs and inline images, without chasing layout around like I did in 1997.</li>
+		<li>Don't cross the streams. WYSIWYG is a great idea, but layout and rendering are not the same thing.</li>
+		<li>I should be able to render everything side by side, and updates should be at interactive speed (see above).</li>
+	</ul>
+	<li>I want <i>freedom.</i>
+		<ul>
+			<li>I want to be able to do anything, anywhere, for any reason... browser permitting.</li>
+			<li>WordPress etc. are cool, and there is already an extension for <i>everything</i>, but nothing I want to do is so complex it can't be implemented in the time it would take to find an extension and learn a (terrible) new API</li>
+			<li>Also, see; "monetisation of everything"</li>
+		</ul>
 </ul>
 
-<h5>3. Template System - Simple Composition</h5>
-<p>Our template system uses plain HTML files that compose together to create the final output. This approach eliminates the need for complex templating engines while remaining highly readable:</p>
-<ul>
-<li><strong>layout.html</strong> - The master template that wraps everything</li>
-<li><strong>head.html</strong> - Contains meta tags, CSS links, and other head elements</li>
-<li><strong>header.html</strong> - Site navigation and branding</li>
-<li><strong>post.html</strong> - Individual post template</li>
-<li><strong>footer.html</strong> - Site footer with links and copyright</li>
-</ul>
+<p>Writing a static site generator, with the constraint that I was writing it for non-general use (i.e. for myself), is entirely straightforward; load HTML parts and assemble (its practically php with fewer steps). CSS is still the devil, but the devil is in the toaster now, and code AI is perfect for stochastic generation when the outcome is practically stochastic itself (I jest, but CSS is no fun).</p>
 
-<h4>File Structure and Organization</h4>
-<p>The generator follows a simple but effective folder structure:</p>
-<ul>
-<li><strong>Posts/</strong> - Raw HTML post content files</li>
-<li><strong>Views/</strong> - Template files for rendering</li>
-<li><strong>Assets/</strong> - Static assets like CSS and images</li>
-</ul>
+<p>Site generation is implemented in C#. In one big soup of pure creation, <code class="code-block">dotnet watch</code> builds on save and assembles the output, which is directed to the local git repo. Live Server watches that directory and renders the changes locally so I can see the mess I'm making, and when I'm happy with the changes I push to remote and GitHub actions builds the page.</p>
 
-<h4>The Build Process</h4>
-<p>The build process is intentionally straightforward, prioritizing transparency and speed:</p>
-<ol>
-<li>Scan the Posts directory for HTML files</li>
-<li>Parse each post file and extract metadata from the filename</li>
-<li>Load the appropriate view templates</li>
-<li>Merge post content with templates using our ViewModels</li>
-<li>Generate the final static HTML files in the output directory</li>
-<li>Copy static assets to the output folder</li>
-</ol>
+<p>AI generation handles the CSS almost exclusively. The value in generating everything, all at once, is that it can get it wrong as many times as it takes to get it right, it updates in (almost) real-time through Live Server, and I can unplug the toaster before it overcooks anything.</p>
 
-<h4>Design Philosophy and Trade-offs</h4>
-<p>This generator embodies a specific design philosophy focused on speed and simplicity. Several deliberate choices were made to achieve these goals:</p>
-<ul>
-<li>Direct dependency management instead of dependency injection containers</li>
-<li>Explicit file paths for transparency and simplicity</li>
-<li>Focused error handling where it matters most</li>
-<li>Convention-based configuration to reduce setup complexity</li>
-<li>Direct file I/O operations for maximum performance</li>
-</ul>
-
-<p>These decisions result in a system that is fast to build, easy to understand, and simple to maintain. While more sophisticated approaches exist, this architecture proves that thoughtful simplicity can be highly effective for focused use cases.</p>-->
+<p>Stay tuned for tomorrow's update, where I'll break down what is currently working, and what isn't.</p>
 	</section>
 </article>
 		</main>
 		<aside>
 			<h2>Recent Posts</h2>
 			<nav>
-				<a href="2025-06-28.html">June 28, 2025</a><a href="2025-06-29.html">June 29, 2025</a>
+				<a href="2025-07-09.html">July 09, 2025</a>
 			</nav>
 		</aside>
 		</div>
