@@ -295,6 +295,37 @@ strong {
     border: 1px solid rgba(59,130,246,.2)
 }
 
+/* Image Styles */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 40px rgba(59, 130, 246, 0.08);
+    transition: all 0.3s ease;
+    display: block;
+    margin: 2rem auto;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+}
+
+/* Image with caption styling */
+figure {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+figure img {
+    margin-bottom: 1rem;
+}
+
+figcaption {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+    opacity: 0.8;
+}
+
 footer,time {
     color: var(--text-muted)
 }
@@ -468,6 +499,17 @@ footer::before {
         margin-bottom: .75rem;
         text-align: center
     }
+
+    /* Mobile image adjustments */
+    img {
+        margin: 1.5rem auto;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 30px rgba(59, 130, 246, 0.06);
+    }
+
+    figure {
+        margin: 1.5rem 0;
+    }
 }
 
 @media (min-width:769px) {
@@ -593,7 +635,7 @@ footer::before {
 		<aside>
 			<h2>Recent Posts</h2>
 			<nav>
-				<a href="2025-07-09.html">July 09, 2025</a>
+				<a href="2025-07-09.html">July 09, 2025</a><a href="2025-07-11.html">July 11, 2025</a>
 			</nav>
 		</aside>
 		</div>
