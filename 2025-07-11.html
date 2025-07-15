@@ -167,6 +167,19 @@ header h1 {
     z-index: 1
 }
 
+.header-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.site-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-primary);
+}
+
 nav {
     margin-top: 1rem;
     z-index: 1
@@ -526,7 +539,7 @@ footer::before {
 	<input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle mobile navigation menu">
 	<label for="mobile-menu-toggle" class="mobile-menu-button" aria-label="Open mobile menu"></label>
 	<header>
-		<h1>Neal Cooney's Tech(ish) Blog</h1>
+		<h1 class="header-title"><img src="nachos.png" alt="Site Logo" class="site-logo">Neal Cooney's Tech(ish) Blog</h1>
 <nav>
 	<a href="index.html">Home</a>
 </nav>
