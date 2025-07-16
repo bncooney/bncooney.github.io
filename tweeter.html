@@ -7,13 +7,6 @@
 	<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neal Cooney's Tech(ish) Blog</title>
-
-<meta property="og:title" content="Neal Cooney's Tech(ish) Blog">
-<meta property="og:description" content="Its a blog about tech, coding, and recent trains of thought.">
-<meta property="og:image" content="https://bncooney.github.io/tiled.png">
-<meta property="og:url" content="https://bncooney.github.io/index.html">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Neal Cooney's Tech(ish) Blog">
 </head>
 <body>
 	<input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle mobile navigation menu">
@@ -47,10 +40,10 @@
         Write two, throw one away. <br><br>TIL how OpenGraph works, and that my assumptions about using a common header file were wrong
     </div>
     <div class="twit-actions">
-        <div class="twit-like" onclick="handleLike(this)" style="position: relative;">
+        <button class="twit-like" onclick="handleLike(this)" style="position: relative;" aria-label="Like this post">
             <span class="twit-like-icon">❤️</span>
             <span class="twit-like-count">0</span>
-        </div>
+        </button>
     </div>
 </div>
 <div class="twit-card">
@@ -67,10 +60,10 @@
         Dogs *can* look up!
     </div>
     <div class="twit-actions">
-        <div class="twit-like" onclick="handleLike(this)" style="position: relative;">
+        <button class="twit-like" onclick="handleLike(this)" style="position: relative;" aria-label="Like this post">
             <span class="twit-like-icon">❤️</span>
             <span class="twit-like-count">5</span>
-        </div>
+        </button>
     </div>
 </div>
 <div class="twit-card">
@@ -87,10 +80,10 @@
         Law is the astrology of serious professions
     </div>
     <div class="twit-actions">
-        <div class="twit-like" onclick="handleLike(this)" style="position: relative;">
+        <button class="twit-like" onclick="handleLike(this)" style="position: relative;" aria-label="Like this post">
             <span class="twit-like-icon">❤️</span>
             <span class="twit-like-count">4</span>
-        </div>
+        </button>
     </div>
 </div>
 
@@ -99,17 +92,28 @@
 
 <script>
 let likeTimeouts = new Map();
+let likedTwits = new Set();
 
 function handleLike(element) {
+    // Get the twit card first to create/get a consistent ID
+    const twitCard = element.closest('.twit-card');
+    
+    // Create a unique identifier for this twit card immediately
+    if (!twitCard.dataset.twitId) {
+        twitCard.dataset.twitId = Date.now() + Math.random();
+    }
+    const twitId = twitCard.dataset.twitId;
+    
+    // Check if this twit is already liked - do this as early as possible
+    if (likedTwits.has(twitId)) {
+        return; // Exit early if already liked
+    }
+    
+    // Mark this twit as liked immediately to prevent race conditions
+    likedTwits.add(twitId);
+    
     const likeCountElement = element.querySelector('.twit-like-count');
     const currentCount = parseInt(likeCountElement.textContent);
-    
-    // Create a unique identifier for this twit card
-    const twitCard = element.closest('.twit-card');
-    const twitId = twitCard.dataset.twitId || Date.now() + Math.random();
-    if (!twitCard.dataset.twitId) {
-        twitCard.dataset.twitId = twitId;
-    }
     
     // Clear any existing timeout for this specific twit
     if (likeTimeouts.has(twitId)) {
@@ -176,8 +180,9 @@ function handleLike(element) {
             }
         }, 1500);
         
-        // Clean up the timeout from the map
+        // Clean up the timeout from the map and remove from liked set
         likeTimeouts.delete(twitId);
+        likedTwits.delete(twitId);
     }, 2000);
     
     // Store the timeout for this specific twit
