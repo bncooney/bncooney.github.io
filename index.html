@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="syntax.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="profile">
+            <div class="avatar-container">
+                <img class="avatar" src="nacho_200.jpeg" alt="Neal Cooney">
+            </div>
+            <div class="info">
+                <h1>Neal Cooney</h1>
+                <p>Software Engineer</p>
+                <div class="social">
+                    <a href="https://au.linkedin.com/in/neal-cooney-a320a1161" target="_blank"><i class="fa"
+                            style="color:#0077b5">&#xf08c;</i></a>
+                </div>
+            </div>
+        </div>
+        <nav>
+            <button onclick="showAll()">All</button>
+            <button onclick="filterTag('tech')">Tech</button>
+            <button onclick="filterTag('life')">Life</button>
+        </nav>
+    </header>
+    <main id="posts">
+        <article data-tags="tech">
+            <h2>Simple C# Pattern</h2>
+            <time>2025-09-24</time>
+            <p>A clean approach to nullable validation:</p>
+            <div class="code-block">
+                <button class="copy" onclick="copy(this)"><i class="fa">&#xf0c5;</i> Copy</button>
+                <pre><code>public static string GetName(User? user)
+{
+    return user?.Name ?? "Anonymous"; // Safe navigation
+}</code></pre>
+            </div>
+        </article>
+    </main>
+    <script>
+        function showAll() { document.querySelectorAll('article').forEach(a => a.style.display = 'block') }
+        function filterTag(tag) { document.querySelectorAll('article').forEach(a => a.style.display = a.dataset.tags.includes(tag) ? 'block' : 'none') }
+        function copy(btn) {
+            const code = btn.nextElementSibling.querySelector('code').textContent;
+            const textarea = document.createElement('textarea');
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            btn.innerHTML = '<i class="fa" style="color:#6a9955">&#xf00c;</i> Copied';
+            setTimeout(() => btn.innerHTML = '<i class="fa">&#xf0c5;</i> Copy', 2000);
+        }
+    </script>
+</body>
+
+</html>
