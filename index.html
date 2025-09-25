@@ -2,63 +2,102 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="syntax.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Blog</title>
+	<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <header>
-        <div class="profile">
-            <div class="avatar-container">
-                <img class="avatar" src="nacho_200.jpeg" alt="Neal Cooney">
-            </div>
-            <div class="info">
-                <h1>Neal Cooney</h1>
-                <p>Software Engineer</p>
-                <div class="social">
-                    <a href="https://au.linkedin.com/in/neal-cooney-a320a1161" target="_blank"><i class="fa"
-                            style="color:#0077b5">&#xf08c;</i></a>
-                </div>
-            </div>
-        </div>
-        <nav>
-            <button onclick="showAll()">All</button>
-            <button onclick="filterTag('tech')">Tech</button>
-            <button onclick="filterTag('life')">Life</button>
-        </nav>
-    </header>
-    <main id="posts">
-        <article data-tags="tech">
-            <h2>Simple C# Pattern</h2>
-            <time>2025-09-24</time>
-            <p>A clean approach to nullable validation:</p>
-            <div class="code-block">
-                <button class="copy" onclick="copy(this)"><i class="fa">&#xf0c5;</i> Copy</button>
-                <pre><code>public static string GetName(User? user)
+	<header>
+		<div class="profile">
+			<div class="avatar-container">
+				<img class="avatar" src="nacho_200.jpeg" alt="Neal Cooney">
+			</div>
+			<div class="info">
+				<h1>Neal Cooney</h1>
+				<p>Software Engineer</p>
+				<div class="social">
+					<a href="https://au.linkedin.com/in/neal-cooney-a320a1161" target="_blank"><i class="fa"
+							style="color:#0077b5">&#xf08c;</i></a>
+				</div>
+			</div>
+		</div>
+		<nav>
+			<button onclick="showAll()">All</button>
+			<button onclick="filterTag('tech')">Tech</button>
+			<button onclick="filterTag('life')">Life</button>
+		</nav>
+	</header>
+	<main id="posts">
+		<article data-tags="tech">
+			<h2>Zero-allocation string interpolation in modern C# for ImGui</h2>
+			<time>2025-09-25</time>
+			<p><a href="https://github.com/ImGuiNET/ImGui.NET" target="_blank">ImGui.Net</a> is good, but <a
+					href="https://github.com/Cysharp/Utf8StringInterpolation"
+					target="_blank">Utf8StringInterpolation</a>
+				takes it to the next level. Using the TryFormat function, we can avoid per-frame allocations entirely
+				and still use string interpolation in place.
+				(Also using Guard from <a href="https://github.com/CommunityToolkit/dotnet"
+					target="_blank">CommunityToolkit.Diagnostics</a> here.)</p></br>
+			<p>e.g. calling the function below looks like this: <span
+					style="color:#dcdcaa">ImGuiText</span>(_stringBuffer, <span style="color:#ce9178">$"Current FPS:
+					{</span><span style="color:#569cd6">currentFps</span><span style="color:#ce9178">:F1}"</span>)</p>
+			</br>
+			<p>Not sure if I want to just create a local fork and add ~this for the other (wrapped) native functions
+				yet, or if I should create a PR (where the pattern would just be another overload for ImGui.Text etc.).
+				Its definitely not a good time to suggest more third-party NuGet deps for a project that isn't under
+				active development.</p>
+			<div class="code-block">
+				<button class="copy" onclick="copyCode(this)"><i class="fa">&#xf0c5;</i> Copy</button>
+				<div class="code-image-container">
+					<img src="code-snippet.png" alt="C# code snippet" class="code-image">
+					<pre class="hidden-code">
+public static void ImGuiText(Span&lt;byte&gt; buffer, [InterpolatedStringHandlerArgument("buffer")] ref Utf8StringWriter&lt;ArrayBufferWriter&lt;byte&gt;&gt; format)
 {
-    return user?.Name ?? "Anonymous"; // Safe navigation
-}</code></pre>
-            </div>
-        </article>
-    </main>
-    <script>
-        function showAll() { document.querySelectorAll('article').forEach(a => a.style.display = 'block') }
-        function filterTag(tag) { document.querySelectorAll('article').forEach(a => a.style.display = a.dataset.tags.includes(tag) ? 'block' : 'none') }
-        function copy(btn) {
-            const code = btn.nextElementSibling.querySelector('code').textContent;
-            const textarea = document.createElement('textarea');
-            textarea.value = code;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            btn.innerHTML = '<i class="fa" style="color:#6a9955">&#xf00c;</i> Copied';
-            setTimeout(() => btn.innerHTML = '<i class="fa">&#xf0c5;</i> Copy', 2000);
-        }
-    </script>
+	Guard.IsTrue(Utf8String.TryFormat(buffer, out var length, ref format));
+
+	buffer[length] = 0; // Null-terminate the string
+	unsafe
+	{
+		fixed (byte* pBuffer = buffer[..length])
+		{
+			ImGuiNative.igText(pBuffer);
+		}
+	}
+}
+					</pre>
+				</div>
+			</div>
+		</article>
+	</main>
+	<script>
+		function showAll() { document.querySelectorAll('article').forEach(a => a.style.display = 'block') }
+		function filterTag(tag) { document.querySelectorAll('article').forEach(a => a.style.display = a.dataset.tags.includes(tag) ? 'block' : 'none') }
+		function copy(btn) {
+			const code = btn.nextElementSibling.querySelector('code').textContent;
+			const textarea = document.createElement('textarea');
+			textarea.value = code;
+			document.body.appendChild(textarea);
+			textarea.select();
+			document.execCommand('copy');
+			document.body.removeChild(textarea);
+			btn.innerHTML = '<i class="fa" style="color:#6a9955">&#xf00c;</i> Copied';
+			setTimeout(() => btn.innerHTML = '<i class="fa">&#xf0c5;</i> Copy', 2000);
+		}
+
+		function copyCode(btn) {
+			const hiddenCode = btn.nextElementSibling.querySelector('.hidden-code').textContent;
+			const textarea = document.createElement('textarea');
+			textarea.value = hiddenCode;
+			document.body.appendChild(textarea);
+			textarea.select();
+			document.execCommand('copy');
+			document.body.removeChild(textarea);
+			btn.innerHTML = '<i class="fa" style="color:#6a9955">&#xf00c;</i> Copied';
+			setTimeout(() => btn.innerHTML = '<i class="fa">&#xf0c5;</i> Copy', 2000);
+		}
+	</script>
 </body>
 
 </html>
