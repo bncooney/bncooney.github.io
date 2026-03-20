@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Pro Tips and Tricks - Neal Cooney</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body class="theme-anthropic">
+  <header class="site-header">
+    <h1><a href="/">Neal Cooney</a></h1>
+  </header>
+  <a href="/" class="back-link">&larr; Back to all posts</a>
+  <article class="post-content">
+    <h1>Claude Code Opinionated Tips and Tricks</h1>
+    <span class="post-date">March 20, 2026</span>
+
+    <p>Claude Code (the application) with Claude Opus (the model) is easily the best-in-class coding assistant available
+      today. After spending real time with it, here are the tips and tricks that have made the biggest difference in my
+      workflows.</p>
+
+    <h2>1. Use the VS Code extension, avoid the terminal application</h2>
+
+    <p>Claude Code started as a CLI tool, and many tutorials still present it that way, but the VS Code extension is an
+      <strong>enormously</strong> better experience for day-to-day work.
+    </p>
+
+    <p>What you get in VS Code:</p>
+    <ul>
+      <li><strong>Reliability.</strong> The terminal app uses a React-based renderer with notoriously poor
+        performance. The document model was built for rendering anywhere else. The VS Code extension runs in VS Code's
+        native V8-backed webview, which handles large outputs and extended conversations without issue.</li>
+      <li><strong>Interoperability.</strong> Claude's output integrates with your existing extensions:
+        <ul>
+          <li>Rendered Markdown previews</li>
+          <li>PlantUML diagrams</li>
+          <li>Existing filetype hooks and language servers</li>
+        </ul>
+      </li>
+      <li><strong>Consistency.</strong> Split your editor so Claude's conversation sits beside the files it's
+        changing. Review diffs inline, comment on plans in context, and keep your file explorer and source control panel
+        open while Claude works.</li>
+    </ul>
+
+    <p>The terminal is great for scripting, CI pipelines, and piping output into Claude. But for interactive coding
+      sessions, VS Code removes friction at every step. Install the extension, open the command palette, and search
+      "Claude Code" to get started.</p>
+
+    <h2>2. Skip /init. Let memory do the work</h2>
+
+    <p>Many guides tell you to run <code>/init</code> and set up a <code>CLAUDE.md</code> (or
+      <code>copilot-instructions.md</code>, etc.).
+    </p>
+
+    <p>Don't.</p>
+
+    <p>These files get stale and require ongoing management, and every update invalidates the context cache.
+      This hurts you in two ways:</p>
+    <ul>
+      <li>Anthropic's token cache (the cheapest tokens you have) gets busted each time the file changes, so frequent edits mean frequent cache misses.</li>
+      <li>Stale or incorrect instructions poison your conversation context.</li>
+    </ul>
+
+    <p>Instead, lean on Claude Code's built-in memory system. It lives in <code>~/.claude/projects/</code>.</p>
+
+    <ul>
+      <li>Don't state the obvious. Claude Opus is a <strong>monster</strong>. Instructions should address
+        <em>consistent</em> incorrect behaviours that you've observed over multiple conversations, but keep in mind a lot of "mistakes"
+        Claude makes stem from trying to follow established patterns in
+        your codebase. (More on this later.)
+      </li>
+      <li>Keep this short, sharp, and to the point. Only 200 lines will be loaded into context.</li>
+      <li>As a result, updates should be infrequent, and considered.</li>
+    </ul>
+
+    <p>The <code>MEMORY.md</code> index is always loaded into context, so Claude always has this available. This
+      includes sub-agents, without a single config file checked into your repo. You can explicitly say "remember
+      this" to save something.</p>
+
+    <p>This approach keeps your repo clean, avoids conflicts with teammates who use different tools, and produces
+      context that's actually personalized to how <em>you</em> work.</p>
+
+    <h2>3. Vibes only. Let deterministic tools do deterministic work.</h2>
+
+    <p>Don't ask Claude to lint your code. Don't ask it to fix formatting. Don't put lint rules in your memory files.
+      These are deterministic problems with deterministic solutions. If your toolchain doesn't handle them, fix
+      your toolchain.</p>
+
+    <p>Every token Claude spends reasoning about whitespace, semicolons, or import ordering is a token not spent on the
+      thing it's actually good at: understanding intent, designing solutions, and writing code. Linting instructions in
+      context are doubly wasteful. They burn the prompt, <em>and</em> they burn the output when Claude "fixes"
+      things your formatter would have caught on save.</p>
+
+    <p>Set up your deterministic tools and let them run:</p>
+    <ul>
+      <li><strong>Formatters</strong> (Prettier, Black, dotnet format). Run on save or as a pre-commit hook.</li>
+      <li><strong>Linters</strong> (ESLint, Ruff, Roslyn analyzers). Run in CI or as a background task in your
+        editor.</li>
+      <li><strong>Type checkers</strong> (TypeScript, mypy, the C# compiler). These catch entire categories of
+        bugs before Claude ever needs to think about them.</li>
+    </ul>
+
+    <p>Claude's job is authoring. Intent, architecture, code: the stuff that can't be reduced to a rule set. Keep
+      it focused there. If your formatter disagrees with Claude's output, the formatter wins automatically. That's the
+      whole point.</p>
+
+    <h2>4. Tech debt just got more expensive</h2>
+
+    <p>Claude learns from your codebase. Its superpower is <em>reading</em>.</p>
+
+    <p>When Claude reads your project, it treats existing code as the authority on how things should be done. If your codebase has a leaky abstraction, Claude will leak the same way. If you've got a service class that mixes data access with business logic, Claude will write the next one exactly like it. It's not making a mistake. It's <em>following your lead</em>.</p>
+
+    <p>This means tech debt compounds differently now. Before, a bad pattern was a maintenance burden for your team. Today, it's a template that gets replicated at Shenzhen speed. Every anti-pattern in your codebase is an anti-pattern Claude will faithfully reproduce, across every new file it touches.</p>
+
+    <p>The practical implications:</p>
+    <ul>
+      <li><strong>Fix the pattern, not the output.</strong> If Claude keeps producing code you don't like, check whether it's copying something that already exists in your project. Correcting Claude in conversation is a band-aid. Maintenance is the fix.</li>
+      <li><strong>Prioritise refactoring differently.</strong> That "we'll clean it up later" code now actively degrades every AI-assisted change. The ROI on paying down tech debt just went way up.</li>
+      <li><strong>Use Claude to do the refactoring.</strong> This is the silver lining:
+        <ul>
+          <li>Point Claude at the bad pattern.</li>
+          <li>Explain what the good pattern looks like.</li>
+          <li>Let it do the tedious migration across your codebase. It doesn't get bored or distracted and start making mistakes.</li>
+        </ul>
+        Once the codebase reflects the right approach, Claude will follow it going forward.
+      </li>
+    </ul>
+
+    <p>The quality of Claude's output is a mirror of your codebase's quality. Good code in, good code out.</p>
+
+    <h2>5. Plan and execute in the same conversation, and <em>don't</em> use Plan mode</h2>
+
+    <p>The traditional workflow is: plan in one context (conversation), execute in another. Important context gets lost in the handoff every time.</p>
+
+    <p>With a 1 million token context on Opus, planning and execution should happen in the same conversation.</p>
+
+    <p>Counterintuitively, don't use Plan mode for this. When you toggle between Plan and Execute, Claude's system prompt changes. That prompt change invalidates the context cache, which means Claude re-reads and re-explores the codebase from scratch when you switch modes. You pay for the same understanding twice.</p>
+
+    <p>Instead, just leave Claude in normal mode with "Ask before Edits" enabled. Describe your task, let Claude explore and propose an approach, and discuss it. Iterate, refine, ask questions. Claude will execute with the full conversation history intact, diffs will be presented for your approval before they're applied, and it never had to re-orient itself.</p>
+    
+    <p>This changes things:</p>
+    <ul>
+      <li><strong>Decisions carry forward.</strong> When you discuss trade-offs during planning, Claude carries that reasoning into the implementation. No re-explaining, no drift.</li>
+      <li><strong>Corrections compound.</strong> If you steer Claude away from an approach during the plan ("don't introduce a new dependency for this"), it won't circle back to that approach when writing the code.</li>
+      <li><strong>The 1M token context makes this practical.</strong> Claude Opus gives you a million tokens of context. That's enough room to plan a substantial feature, discuss the edge cases, and then implement it, all without losing the thread. And the price is the same regardless of context length.</li>
+    </ul>
+
+    <p>The workflow looks like this:</p>
+    <ol>
+      <li>Describe what you want to build.</li>
+      <li>Ask Claude to plan the approach. Iterate.</li>
+      <li>Once you're happy, tell it to execute. Every decision you made in steps 1 and 2 is still in context.</li>
+    </ol>
+
+    <p>This is faster because Claude doesn't need to read your codebase twice. In a split workflow, the planning conversation reads the relevant files, builds up understanding, and then that context is thrown away. The execution conversation starts cold, re-reads the same files, and has to reconstruct the same understanding from scratch. That's redundant work you're paying for in time and tokens.</p>
+
+    <p>It also produces better code, because the implementation is informed by a conversation that the executor was present for. There's no lossy translation between a plan document and the person (or agent) writing the code. The executor <em>is</em> the planner.</p>
+
+    <h2>6. Clone your dependencies</h2>
+
+    <p>Claude Code can fetch code from GitHub etc., but it's slow, unreliable, and rate limited.</p>
+
+    <p>There's a much better option for open source dependencies: just clone them. Remember: Claude's superpower is reading.</p>
+
+    <p>With the repo locally, Claude can:</p>
+    <ul>
+      <li>Grep the actual source code, not a fallible summary of it.</li>
+      <li>Read type definitions, interfaces, and signatures directly.</li>
+      <li>Follow the implementation through to understand behaviour, not just the documented API surface.</li>
+      <li>Search for usage examples in the project's own test suite.</li>
+    </ul>
+
+    <p>While Claude Code has a working directory it doesn't mind references from other locations, so you can point it at your project and your dependency's repo simultaneously. When Claude needs to understand how a library works, it reads the source. No network round-trips, no stale docs, no tool parsing errors.</p>
+
+    <p>This is especially valuable for:</p>
+    <ul>
+      <li>Libraries with poor or outdated documentation.</li>
+      <li>Internal forks or patched versions where the public docs don't match.</li>
+      <li>Understanding edge cases that only the source code reveals.</li>
+    </ul>
+
+    <p>A <code>git clone</code> takes seconds. The accuracy improvement lasts the entire session.</p>
+
+    <h2>7. Fork your conversations aggressively</h2>
+
+    <p>Maintain the context you've built up by forking the conversation at an earlier point. This is particularly useful for solving multiple issues as a result of a single change, without the risk of compaction.</p>
+
+    <p>Forking is time and <em>dollar</em> cost efficient, because once again, you're maintaining the same cache.</p>
+
+    <p>The instinct from chat-based tools is to keep one long conversation going. Fight that instinct. Conversations are free. Tokens are not.</p>
+
+    <h2>8. Never compact.</h2>
+
+    <p>At the time of writing, compaction is strictly useless. It summarises your conversation history using a smaller, less capable model, then replaces the actual history with that summary. You lose nuance, you lose corrections, you lose the reasoning that informed decisions. Everything you built up in tips 5 and 7 gets flattened into a lossy paragraph.</p>
+
+    <p>If your conversation is getting long, you have two better options:</p>
+    <ul>
+      <li><strong>Fork at an earlier point.</strong> Go back to before the conversation went off track and branch from there. You keep the good context and lose the noise.</li>
+      <li><strong>Start fresh.</strong> Give Claude the context it actually needs: a summary you wrote yourself, the current state of the plan, or just a <code>git diff</code>. You know what matters better than a compaction model does.</li>
+    </ul>
+
+    <p>Compaction feels productive because it keeps the conversation alive. But a conversation full of summarised context is worse than a new conversation with precise context. Don't let sunk cost keep you in a degraded session.</p>
+
+    <h2>9. Commit often, squash later</h2>
+
+    <p>Claude works best when it can see what's changed. Committing frequently gives both you and Claude clean checkpoints to reason against.</p>
+
+    <p>This isn't about git hygiene. It's about workflow resilience:</p>
+    <ul>
+      <li><strong>Safe rollback points.</strong> If Claude goes in a wrong direction, you can reset to the last good commit instead of trying to untangle which changes to keep. A five-minute commit habit turns a disaster into a minor inconvenience.</li>
+      <li><strong>Better diffs for new conversations.</strong> When you start a fresh conversation (per tips 7 and 8), a <code>git diff</code> against your last commit gives Claude a precise summary of where things stand. No explanation needed.</li>
+      <li><strong>Cleaner reviews.</strong> Small, frequent commits during development don't mean small, frequent commits in your PR. Squash them before merging. The development history served its purpose; the review history should be clean.</li>
+    </ul>
+
+    <p>Think of commits during a Claude session like quicksaves in a game. Save often, save before anything risky, and don't worry about the save file names until you're done.</p>
+
+    <h2>Wrapping Up</h2>
+
+    <ol>
+      <li><strong>Use VS Code.</strong> It's more reliable, more interoperable, and easier to manage than the terminal.</li>
+      <li><strong>Skip /init.</strong> Let memory build up organically instead of maintaining stale config files.</li>
+      <li><strong>Vibes only.</strong> Let your toolchain handle linting, formatting, and type checking. Keep Claude focused on authoring.</li>
+      <li><strong>Pay down tech debt.</strong> Claude follows your codebase's lead. Anti-patterns now replicate at machine speed.</li>
+      <li><strong>Plan and execute together.</strong> Same conversation, same context. Don't use Plan mode.</li>
+      <li><strong>Clone your dependencies.</strong> Local source beats web fetching every time.</li>
+      <li><strong>Fork aggressively.</strong> Branch your conversations like you branch your code.</li>
+      <li><strong>Never compact.</strong> Fork earlier or start fresh with precise context instead.</li>
+      <li><strong>Commit often, squash later.</strong> Frequent commits give you rollback points and clean diffs for new conversations.</li>
+    </ol>
+
+    <h2>Bonus: All of this will change</h2>
+
+    <p>Every tip in this post has a shelf life. Boris Cherny and the Claude Code team ship at a pace that makes most of these observations temporary. Plan mode might get context-aware caching tomorrow. Compaction might become lossless next month. The VS Code extension might get features that make half of this list redundant.</p>
+
+    <p>The only durable advice is: stay adaptive. Hold your workflows loosely. When the tooling changes, change with it. The developers who get the most out of Claude Code aren't the ones who found the perfect setup. They're the ones who keep adjusting.</p>
+
+    <p>Be like bamboo. Strong roots, flexible everything else.</p>
+
+  </article>
+</body>
+
+</html>
