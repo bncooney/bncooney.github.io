@@ -126,6 +126,13 @@
         </ul>
         Once the codebase reflects the right approach, Claude will follow it going forward.
       </li>
+      <li><strong>Point Claude at the good examples, hide the bad ones.</strong> If your codebase has both good and bad patterns, don't leave it to chance which one Claude latches onto.
+        <ul>
+          <li>Explicitly reference the files that do it right.</li>
+          <li>Consider adding extremely poor examples to the Read deny list in your settings.</li>
+          <li>If Claude can't see the bad examples, it can't copy them.</li>
+        </ul>
+      </li>
     </ul>
 
     <p>The quality of Claude's output is a mirror of your codebase's quality. Good code in, good code out.</p>
@@ -207,9 +214,9 @@
 
     <p>Claude works best when it can see what's changed. Committing frequently gives both you and Claude clean checkpoints to reason against.</p>
 
-    <p>This isn't about git hygiene. It's about workflow resilience:</p>
+    <p>Build an inherently resilient workflow:</p>
     <ul>
-      <li><strong>Safe rollback points.</strong> If Claude goes in a wrong direction, you can reset to the last good commit instead of trying to untangle which changes to keep. A five-minute commit habit turns a disaster into a minor inconvenience.</li>
+      <li><strong>Safe rollback points.</strong> If Claude goes in a wrong direction, you can reset to the last good commit instead of trying to untangle which changes to keep.</li>
       <li><strong>Better diffs for new conversations.</strong> When you start a fresh conversation (per tips 7 and 8), a <code>git diff</code> against your last commit gives Claude a precise summary of where things stand. No explanation needed.</li>
       <li><strong>Cleaner reviews.</strong> Small, frequent commits during development don't mean small, frequent commits in your PR. Squash them before merging. The development history served its purpose; the review history should be clean.</li>
     </ul>
